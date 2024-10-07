@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import ReactMarkdown from 'react-markdown';
 import { Loader2 } from 'lucide-react'; // Optional: For loading indicators
 import { toast } from 'sonner'; // Assuming you use this for notifications
-import Quiz from '@/components/Quiz'; // Import the Quiz component
+import Quiz from '@/components/quiz'; // Import the Quiz component
 
 export default function LessonPlan({ plan }) {
   const [expandedLesson, setExpandedLesson] = useState(null);
