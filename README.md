@@ -21,4 +21,4 @@ A personalized lesson plan generator built with Next.js and OpenAI.
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/your-username/your-repo-name.git
+   git clone https://github.com/ssh1be/swiftskil.git
