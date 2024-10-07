@@ -17,12 +17,12 @@ interface Lesson {
   description: string;
 }
 
-interface LessonContent {
+export interface LessonContent {
   content: string;
   quiz: QuizQuestion[];
 }
 
-interface LessonPlan {
+export interface LessonPlan {
   title: string;
   topic: string;
   summary: string;

@@ -10,13 +10,19 @@ import ReactMarkdown from 'react-markdown';
 import { Loader2 } from 'lucide-react'; // Optional: For loading indicators
 import { toast } from 'sonner'; // Assuming you use this for notifications
 import Quiz from '@/components/quiz'; // Import the Quiz component
+import { LessonPlan as LessonPlanType, LessonContent } from '@/lib/ai-service';
 
-export default function LessonPlan({ plan }) {
-  const [expandedLesson, setExpandedLesson] = useState(null);
-  const [lessonContent, setLessonContent] = useState({});
-  const [loadingLessonId, setLoadingLessonId] = useState(null); // Track loading state per lesson
+interface LessonPlanProps {
+  plan: LessonPlanType;
+}
 
-  const handleExpandLesson = async (lessonId) => {
+
+export default function LessonPlan({ plan }: LessonPlanProps) {
+  const [expandedLesson, setExpandedLesson] = useState<number | null>(null);
+  const [lessonContent, setLessonContent] = useState<{ [key: number]: LessonContent }>({});
+  const [loadingLessonId, setLoadingLessonId] = useState<number | null>(null); // Track loading state per lesson
+
+  const handleExpandLesson = async (lessonId: number) => {
     // Toggle expansion
     if (expandedLesson === lessonId) {
       setExpandedLesson(null);
@@ -56,7 +62,7 @@ export default function LessonPlan({ plan }) {
       setLessonContent((prev) => ({ ...prev, [lessonId]: content }));
     } catch (error) {
       console.error('Error generating lesson content:', error);
-      toast.error(`Failed to load lesson content: ${error.message}`);
+      //toast.error(`Failed to load lesson content: ${error.message}`);
     } finally {
       setLoadingLessonId(null); // End loading
     }
