@@ -55,7 +55,7 @@ export default function Home() {
       setLessonPlan(plan);
     } catch (error) {
       console.error('Error generating lesson plan:', error);
-      toast.error(`Failed to generate lesson plan: ${error.message}`);
+      toast.error(`Failed to generate lesson plan: ${error}`);
     } finally {
       setLoading(false);
     }
