@@ -11,6 +11,8 @@ import { Loader2 } from 'lucide-react';
 import LessonPlan from '@/components/lesson-plan';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
+import ProtectedRoute from '@/components/ProtectedRoute';
+import { useAuth } from '@/context/AuthContext';
 
 export default function Home() {
   const [topic, setTopic] = useState('');
@@ -61,8 +63,20 @@ export default function Home() {
       setLoading(false);
     }
   };
+  const { signOut } = useAuth();
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      toast.success('Logged out successfully!');
+    } catch (error: any) {
+      console.error('Sign out error:', error);
+      toast.error(error.error_description || 'Failed to sign out.');
+    }
+  };
 
   return (
+  <ProtectedRoute>
     <motion.div
       className=""
       initial={{ opacity: 0, y: 50 }}
@@ -71,7 +85,7 @@ export default function Home() {
       transition={{ duration: 1 }}
     >
     <main className="flex min-h-screen flex-col items-center justify-center p-24">
-      <video autoPlay loop muted className="background-video">
+      <video autoPlay loop muted className="absolute top-0 left-0 w-full h-full object-cover -z-10">
         <source src="assets/bg2birdsblue.mp4" type="video/mp4" />
         Your browser does not support the video tag.
       </video>
@@ -92,15 +106,21 @@ export default function Home() {
             <Button onClick={handleSearch} disabled={loading}>
               {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Search'}
             </Button>
+            <Button onClick={handleSignOut}>
+              Sign Out
+            </Button>
           </div>
           {lessonPlan && (
             <div className="mt-6">
               <LessonPlan plan={lessonPlan} />
             </div>
           )}
+          
         </CardContent>
       </Card>
+      
     </main>
     </motion.div>
+  </ProtectedRoute>
   );
 }

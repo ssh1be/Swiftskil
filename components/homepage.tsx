@@ -5,14 +5,32 @@
 import Image from "next/image";
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Button } from '@/components/ui/button'; // Ensure you have a Button component or use a standard button
+import { Button } from '@/components/ui/button';
+import { useState, useEffect } from 'react';
+import LoginModal from '@/components/LoginModal';
+import { useAuth } from '@/context/AuthContext';
+import { toast } from 'sonner';
+import { supabase } from '@/lib/supabaseClient';
 
 export default function Home() {
   const router = useRouter();
+  const { user } = useAuth();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleStart = () => {
-    router.push('/lesson-plan'); // Navigates to the main application page
+    if (user) {
+      router.push('/lesson-plan'); // Navigate if already logged in
+    } else {
+      setIsModalOpen(true); // Open login modal
+    }
   };
+
+  useEffect(() => {
+    if (user) {
+      // Automatically navigate if user is logged in
+      router.push('/lesson-plan');
+    }
+  }, [user, router]);
 
   return (
     <motion.main
@@ -38,16 +56,32 @@ export default function Home() {
           height={1000}
         />
 
+        {/* Descriptive Text */}
+        <div
+          style={{
+            fontFamily: 'Comfortaa, sans-serif',
+            color: '#52b39e',
+            fontSize: '25px',
+            userSelect: 'none',
+          }}
+          className="text-center mt-4"
+        >
+          Learn about{" "}
+          <span className="font-bold">Anything</span>
+        </div>
 
-        {/* Start Button */}
+        {/* Login Button */}
         <Button
           onClick={handleStart}
-          className="mt-8 px-6 py-3 bg-[#52b39e] text-white rounded-md hover:bg-[#52b39e] transition-colors duration-300"
-          aria-label="Start the lesson plan"
+          className="mt-8 px-6 py-3 bg-[#52b39e] text-white rounded-md hover:bg-[#429383] transition-colors duration-300"
+          aria-label="Login to start the lesson plan"
         >
-          Start
+          Sign In
         </Button>
       </div>
+
+      {/* Login Modal */}
+      <LoginModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </motion.main>
   );
 }
