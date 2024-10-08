@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
+import  LoginButton from '@/components/login-button';
 import { useState, useEffect } from 'react';
 import LoginModal from '@/components/LoginModal';
 import { useAuth } from '@/context/AuthContext';
@@ -71,13 +72,10 @@ export default function Home() {
         </div>
 
         {/* Login Button */}
-        <Button
+        <LoginButton
           onClick={handleStart}
-          className="mt-8 px-6 py-3 bg-[#52b39e] text-white rounded-md hover:bg-[#429383] transition-colors duration-300"
           aria-label="Login to start the lesson plan"
-        >
-          Sign In
-        </Button>
+        />
       </div>
 
       {/* Login Modal */}
