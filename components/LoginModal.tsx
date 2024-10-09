@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
+import HCaptcha from '@hcaptcha/react-hcaptcha';
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -20,6 +21,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState('');
 
   const handleAuth = async () => {
     if (!email || !password) {
@@ -30,11 +32,11 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
     setLoading(true);
     try {
       if (isSignUp) {
-        await signUp(email, password);
+        await signUp(email, password, captchaToken);
         toast.success('Signed up successfully! Please check your email to confirm.');
         onClose();
       } else {
-        await signIn(email, password);
+        await signIn(email, password, captchaToken);
         toast.success('Logged in successfully!');
         onClose();
       }
@@ -89,6 +91,16 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
+          <div id="captcha2" className='-translate-x-3.5'>
+          <HCaptcha sitekey="9928d4f0-5fe0-435a-8c20-3098663ad612" 
+          onVerify={(token) => {
+            setCaptchaToken(token)
+            const captchaElement = document.getElementById("captcha2");
+            if (captchaElement) {
+              captchaElement.style.display = "none";
+            }
+          }}/>
+          </div>
           <Button onClick={handleAuth} disabled={loading}>
             {loading ? (isSignUp ? 'Signing Up...' : 'Logging in...') : (isSignUp ? 'Sign Up' : 'Login')}
           </Button>

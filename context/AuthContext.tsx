@@ -9,9 +9,10 @@ import { Session, User } from '@supabase/supabase-js';
 interface AuthContextType {
   user: User | null;
   session: Session | null;
-  signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string) => Promise<void>;
+  signIn: (email: string, password: string, aptchaToken: string) => Promise<void>;
+  signUp: (email: string, password: string, aptchaToken: string) => Promise<void>;
   signOut: () => Promise<void>;
+  signInAsGuest: (captchaToken: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -39,13 +40,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
   }, []);
 
-  const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+  const signIn = async (email: string, password: string, captchaToken: string) => {
+    const { error } = await supabase.auth.signInWithPassword({ email, password, options:{captchaToken} });
     if (error) throw error; // Throw error to be handled in UI
   };
 
-  const signUp = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signUp({ email, password });
+  const signUp = async (email: string, password: string, captchaToken: string) => {
+    const { error } = await supabase.auth.signUp({ email, password, options:{captchaToken}});
     if (error) throw error; // Throw error to be handled in UI
   };
 
@@ -54,9 +55,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (error) throw error; // Throw error to be handled in UI
   };
 
+  const signInAsGuest = async (captchaToken: string) => {
+    const { data, error } = await supabase.auth.signInAnonymously({options: { captchaToken }})
+    if (error) throw error;
+  };
 
   return (
-    <AuthContext.Provider value={{ user, session, signIn, signUp, signOut }}>
+    <AuthContext.Provider value={{ user, session, signIn, signUp, signOut, signInAsGuest }}>
       {children}
     </AuthContext.Provider>
   );

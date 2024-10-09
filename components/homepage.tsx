@@ -7,22 +7,39 @@ import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import  LoginButton from '@/components/login-button';
+import GuestLoginButton from "@/components/guestLogin-button";
 import { useState, useEffect } from 'react';
 import LoginModal from '@/components/LoginModal';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabaseClient';
+import HCaptcha from '@hcaptcha/react-hcaptcha'
+
 
 export default function Home() {
   const router = useRouter();
   const { user } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState('');
 
   const handleStart = () => {
     if (user) {
       router.push('/lesson-plan'); // Navigate if already logged in
     } else {
       setIsModalOpen(true); // Open login modal
+    }
+  };
+
+  const {signInAsGuest} = useAuth();
+
+  const handleGuestLogin = async () => {
+    try {
+      await signInAsGuest(captchaToken);
+      toast.success('Signed in as guest successfully!');
+      handleStart();
+    } catch (error: any) {
+      console.error('Sign in error:', error);
+      toast.error(error.error_description || 'Failed to sign in as guest.');
     }
   };
 
@@ -34,6 +51,7 @@ export default function Home() {
   }, [user, router]);
 
   return (
+    
     <motion.main
       className="flex min-h-screen flex-col items-center justify-center p-24 relative"
       initial={{ opacity: 0 }}
@@ -70,12 +88,27 @@ export default function Home() {
           Learn about{" "}
           <span className="font-bold">Anything</span>
         </div>
-
-        {/* Login Button */}
+        <div id="captcha" className="visible z-10 translate-y-20">
+          <HCaptcha sitekey="9928d4f0-5fe0-435a-8c20-3098663ad612" 
+          onVerify={(token) => {
+            setCaptchaToken(token)
+            const captchaElement = document.getElementById("captcha");
+            if (captchaElement) {
+              captchaElement.style.display = "none";
+            }
+          }}/>
+        </div>
+        <div className="flex-row items-center space-x-5 justify-center">
         <LoginButton
           onClick={handleStart}
           aria-label="Login to start the lesson plan"
         />
+        <GuestLoginButton
+          onClick={handleGuestLogin}
+          aria-label="Login as a guest to start the lesson plan"
+        />
+        </div>
+        
       </div>
 
       {/* Login Modal */}
